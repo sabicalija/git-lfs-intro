@@ -1,0 +1,290 @@
+== git-lfs tutorial
+Alija Sabic, link:mailto:sabic.alija@gmail.com?subject=GitHub:&#160;git-lfs-intro[sabic.alija@gmail.com]
+
+== Setup git repository with *git-lfs*
+
+This repository whas setup using following commands:
+
+. Create a directory
++
+.Create directory
+[subs="verbatim,macros"]
+----
+pass:q[~$ *mkdir* git-lfs-intro]
+pass:q[~$ *cd* git-lfs-intro]
+----
+
+. Initialize git and git-lfs
++
+[CAUTION]
+=====
+`*git lfs install* --local --skip-smudge` (explained below) adds configuration locally (folder).
+However, the local configuration file (`.git/config`) can't be tracked and hence, uploaded to a remote repository.
+
+Use `*git lfs install* --skip-smudge` to prevent LFS from downloading or cloning files (globally) unless explicitly specified.
+
+
+[WARNING]
+====
+`--skip-smudge` adds following entries to the global git config at `~/.gitconfig`:
+
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.required=true +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.clean=git-lfs clean -- %f +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.smudge=git-lfs smudge --skip -- %f +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.process=git-lfs filter-process --skip +
+=====
++
+[subs="verbatim,macros"]
+.Initialize git and git-lfs
+----
+pass:q[~/git-lfs-intro$ *git init*]
+pass:q[<font color=#999999>Initialized empty Git repository in ~/git-lfs-intro/.git/</font>]
+
+~/git-lfs-intro$ pass:q[*git lfs install*] --local --skip-smudge       <1> <2>
+pass:q[<font color=#999999>Updated git hooks.</font>]
+pass:q[<font color=#999999>Git LFS initialized.</font>]
+
+~/git-lfs-intro$ pass:q[*git lfs track*] '*.pdf'                       <3>
+pass:q[<font color=#999999>Tracking "*.pdf"</font>] 
+----
+<1> `--local` sets the "lfs" smudge and clean filters in the local repository's git config, instead of the global git config (`~/.gitconfig`).
+<2> `--skip-smudge` skips automatic downloading of objects on clone or pull. This requires a manual "git lfs pull" every time a new commit is checked out on your repository.
+<3> `*git lfs track*` starts tracking given pattern(s) through git LFS.
+
++
+[NOTE]
+====
+`--local` in combination with `--skip-smudge` adds following entries to the local git config at `.git/config`:
+
+=====
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.smudge=git-lfs smudge --skip -- %f +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.process=git-lfs filter-process --skip +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.required=true +
+`.git/config` {nbsp} {nbsp} {nbsp} filter.lfs.clean=git-lfs clean -- %f +
+=====
+
+====
+
+. Create 'git-lfs' man-pages pdfs
++
+.Create data to track with LFS
+[subs="verbatim,macros"]
+----
+pass:q[~/git-lfs-intro$ *apropos*. | *awk* '{print $1}' | *grep* git-lfs | while read in; do *man* -t <font color=#ee00ff>"$in"</font> | *ps2pdf* - <font color=#ee00ff>"$in"</font>.pdf; done]
+pass:q[~/git-lfs-intro$ *ls*]
+pass:q[<font color=#999999>git-lfs-checkout.pdf       git-lfs-config.pdf      git-lfs-fetch.pdf           git-lfs-install.pdf    git-lfs-logs.pdf</font>]
+pass:q[<font color=#999999>git-lfs.pdf                git-lfs-post-merge.pdf  git-lfs-pull.pdf            git-lfs-status.pdf     git-lfs-unlock.pdf</font>]
+pass:q[<font color=#999999>git-lfs-clean.pdf          git-lfs-env.pdf         git-lfs-filter-process.pdf  git-lfs-lock.pdf       git-lfs-ls-files.pdf</font>]
+pass:q[<font color=#999999>git-lfs-pointer.pdf        git-lfs-pre-push.pdf    git-lfs-push.pdf            git-lfs-track.pdf      git-lfs-untrack.pdf</font>]
+pass:q[<font color=#999999>git-lfs-clone.pdf          git-lfs-ext.pdf         git-lfs-fsck.pdf            git-lfs-locks.pdf      git-lfs-migrate.pdf</font>]
+pass:q[<font color=#999999>git-lfs-post-checkout.pdf  git-lfs-prune.pdf       git-lfs-smudge.pdf          git-lfs-uninstall.pdf  git-lfs-update.pdf</font>]
+----
+
+. Add files and `.gitattributes` and commit 
++
+.Commit files
+[subs="verbatim,macros"]
+----
+pass:q[~/git-lfs-intro$ *git add* .gitattributes <font color=#ee00ff>"*.pdf"</font>]
+pass:q[~/git-lfs-intro$ *git commit* -m <font color=#ee00ff>"Initial commit"</font>]
+----
+
+
+
+
+== Clone repository
+
+
+To prevent lfs from downloading or cloning LFS tracked files _globally_ enter:
+
+.Configure skipping LFS tracked files
+[subs="verbatim,macros"]
+----
+pass:q[$ *git lfs install* --skip-smudge]
+----
+
+This will prevent downloading lfs files when cloning repositories. 
+If you `clone` this repository now, by entering the command below, git will download only a _pointer_ to the lfs file (named just as the original file).
+
+
+To clone this LFS repository enter:
+[subs="verbatim,macros"]
+.Clone the repository
+----
+pass:q[~/temp$ *git clone* <a href=https://github.com/sabicalija/git-lfs-intro.git>https://github.com/sabicalija/git-lfs-intro.git</a>]
+----
+
+/////
+[NOTE]
+=====
+This repository is set up with `--local --skip-smudge`.
+
+Files tracked with git LFS will not be downloaded or cloned. +
+Use `git lfs pull` or `git lfs pull --include=filename` to pull all or single files, respecitively.
+=====
+/////
+
+
+== Load lfs file
+
+You can download all or single files by entering following command:
+
+* *Single file*
++
+[subs="verbatim,macros"]
+.Pull single LFS tracked file
+----
+pass:q[~/temp/git-lfs-intro$ *git lfs pull* <font color=#0066ff>--include</font>=filename]
+----
++
+To download the main git-lfs manpage pdf enter
++
+[subs="verbatim,macros"]
+.Pull file "git-lfs.pdf"
+----
+pass:q[~/temp/git-lfs-intro$ *git lfs pull* <font color=#0066ff>--include</font>=<font color=#ee00ff>"git-lfs.pdf"</font>]
+pass:q[<font color=#999999>Git LFS: (1 of 1 files) 18.97 KB / 18.97 KB</font>]
+----
+
++
+[NOTE]
+=====
+Stage the newly downloaded file. This gives git the chance, to see that the "new" file is actually already tracked by git-lfs.
+
+[subs="verbatim,macros"]
+.Restore respository state
+----
+pass:q[~/temp/git-lfs-intro$ *git add* git-lfs.pdf]
+----
+
+or reset the repository by entering:
+[subs="verbatim,macros"]
+.Restore (reset) repostiory state
+----
+pass:q[~/temp/git-lfs-intro$ *git reset* HEAD .]
+----
+=====
+
+
+* *All files*
++
+[subs="verbatim,macros"]
+.Pull all LFS tracked files
+----
+pass:q[~/temp/git-lfs-intro$ *git lfs pull*]
+pass:q[<font color=#999999>Git LFS: (29 of 29 files) 475.39 KB / 475.39 KB</font>]
+----
+
+== Convert lfs file to pointer
+
+In case you don't need the original binary anymore, you can convert it back to a pointer file.
+To achieve this enter following commands:
+
+[subs="verbatim,macros"]
+.Convert LFS tracked binary to pointer
+----
+pass:q[~/temp/git-lfs-intro$ *git lfs pointer* --file=filename]
+pass:q[<font color=#999999>Git LFS pointer for filename</font>]
+
+pass:q[<font color=#999999>version</font> <a href=https://git-lfs.github.com/spec/v1>https://git-lfs.github.com/spec/v1</a>]
+pass:q[<font color=#999999>oid sha256:dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+pass:q[<font color=#999999>size 19425</font>]
+----
+
+This will output the generated pointer to the `stdout`.
+_Copy_ the content to a new file, _delete_ the downloaded LFS file, and rename the newly created pointer file using it's original name.
+Now, stage the file again, to restore the repository's state.
+
+To convert the main `git-lfs.pdf` manpage pdf to a pointer file enter:
+
+[subs="verbatim,macros"]
+.Convert "git-lfs.pdf" to pointer
+----
+pass:q[~/temp/git-lfs-intro$ *git lfs pointer* --file=<font color=#ee00ff>"git-lfs.pdf"</font> > git-lfs.pdf.pt]
+pass:q[<font color=#999999>Git LFS pointer for git-lfs.pdf</font>]
+
+pass:q[~/temp/git-lfs-intro$ *rm* git-lfs.pdf]
+pass:q[~/temp/git-lfs-intro$ *mv* git-lfs.pdf.pt git-lfs.pdf]
+pass:q[~/temp/git-lfs-intro$ *git add* git-lfs.pdf]
+----
+
+== Delete a lfs file
+
+[CAUTION]
+=====
+The files exchanged by a pointer file are removed from the repository, but not from disk. 
+=====
+
+To remove the original binary (tracked by git LFS) locate the file you wish to remove at `.git/lfs/objects` and delete it there. 
+
+NOTE: Now, if you want to get the binary again, simply enter `git lfs pull --include=filename`.
+
+You can use the `oid` from the pointer file, to print the location of the binary file to `stdout` or delete the file "automatically".
+
+
+.Read the oid from pointer file
+[subs="verbatim,macros"]
+-----
+
+pass:q[~/temp/git-lfs-intro$ *cat* git-lfs.pdf]
+pass:q[<font color=#999999>version </font><a href=https://git-lfs.github.com/spec/v1>https://git-lfs.github.com/spec/v1</a>]
+pass:q[<font color=#999999>oid sha256:dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+pass:q[<font color=#999999>size 19425</font>]
+
+pass:q[~/temp/git-lfs-intro$ *cat* git-lfs.pdf | *grep* oid]
+pass:q[<font color=#ff0000>oid</font> <font color=#999999>sha256:dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+
+pass:q[~/temp/git-lfs-intro$ *cat* git-lfs.pdf | *grep* oid | *cut* -d <font color=#ee00ff>":"</font> -f 2]
+pass:q[<font color=#999999>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+
+-----
+
+.Print binary file location to terminal
+[subs="verbatim,macros"]
+-----
+pass:q[~/temp/git-lfs-intro$ *find* . | *grep* $(*cat* git-lfs.pdf | *grep* oid | *cut* -d <font color=#ee00ff>":"</font> -f 2)]
+pass:q[<font color=#999999>./.git/lfs/objects/dc/26/</font><font color=#ff0000>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+-----
+
+You could also use following short-cut, but be carefull.
+The commands need to be entered subsequently.
+
+.Print binary file location to terminal (short cut)
+[subs="verbatim,macros"]
+-----
+pass:q[~/temp/git-lfs-intro$ *cat* git-lfs.pdf | *grep* oid | *cut* -d <font color=#ee00ff>":"</font> -f 2]
+pass:q[<font color=#999999>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+
+pass:q[~/temp/git-lfs-intro$ *find* . | *grep* $(!!)]
+pass:q[<font color=#999999>find . | grep $(cat git-lfs.pdf | grep oid | cut -d ":" -f 2)</font>]
+pass:q[<font color=#999999>./.git/lfs/objects/dc/26/</font><font color=#ff0000>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+-----
+
+[NOTE]
+=====
+The location of the binary, or the names of the folders where it is stored matches a pattern of the oid hash value.
+=====
+
+.Delete binary file automatically
+[subs="verbatim,macros"]
+-----
+pass:q[~/temp/git-lfs-intro$ *rm* $(*find* . | *grep* $(*cat* git-lfs.pdf | *grep* oid | *cut* -d <font color=#ee00ff>":"</font> -f 2))]
+-----
+
+or with a short cut, just like above:
+
+.Delete binary file automatically (short cut)
+[subs="verbatim,macros"]
+-----
+pass:q[~/temp/git-lfs-intro$ *cat* git-lfs.pdf | *grep* oid | *cut* -d <font color=#ee00ff>":"</font> -f 2]
+pass:q[<font color=#999999>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+
+pass:q[~/temp/git-lfs-intro$ *find* . | grep $(!!)]
+pass:q[<font color=#999999>find . | grep $(cat git-lfs.pdf | grep oid | cut -d ":" -f 2)</font>]
+pass:q[<font color=#999999>./.git/lfs/objects/dc/26/</font><font color=#ff0000>dc26a22ac0dceb6ce27dd870a1a9f6791f45d4fbc75499093779de3d30b7b5ba</font>]
+
+pass:q[~/temp/git-lfs-intro$ *rm* $(!!)]
+pass:q[<font color=#999999>rm $(find . | grep $(cat git-lfs.pdf | grep oid | cut -d ":" -f 2))</font>]
+
+~/temp/git-lfs-intro$ 
+-----
