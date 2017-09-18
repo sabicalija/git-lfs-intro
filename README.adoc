@@ -1,6 +1,27 @@
 == git-lfs tutorial
 Alija Sabic, link:mailto:sabic.alija@gmail.com?subject=GitHub:&#160;git-lfs-intro[sabic.alija@gmail.com]
 
+:icons: font
+:icon-set: font
+
+// Set new URI for reference to FontAwesome CSS
+:iconfont-cdn: //maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.mi$
+
+:caution-caption: ☠
+:important-caption: ❗
+:note-caption: 🛈
+:tip-caption: 💡
+:warning-caption: ⚠
+
+
+:toc: left
+:toc2:
+:docinfo2:
+// article, book or manpage
+:doctype: article
+:source-highlighter: prettify
+
+
 == Setup git repository with *git-lfs*
 
 This repository whas setup using following commands:
