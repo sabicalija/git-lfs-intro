@@ -1,4 +1,4 @@
-== git-lfs tutorial
+= git-lfs tutorial
 Alija Sabic, link:mailto:sabic.alija@gmail.com?subject=GitHub:&#160;git-lfs-intro[sabic.alija@gmail.com]
 
 :icons: font
