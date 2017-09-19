@@ -24,7 +24,7 @@ Alija Sabic, link:mailto:sabic.alija@gmail.com?subject=GitHub:&#160;git-lfs-intr
 
 == Setup git repository with *git-lfs*
 
-This repository whas setup using following commands:
+This repository was setup using following commands:
 
 . Create a directory
 +
